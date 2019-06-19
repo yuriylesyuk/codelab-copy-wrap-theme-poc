@@ -1,6 +1,3 @@
-
-<!doctype html>
-
 <html>
 <head>
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
@@ -11,6 +8,24 @@
   <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="codelab-elements/codelab-elements.css">
   <style>
+
+
+.code-block {
+  position: relative;
+}
+
+.code-menu {
+    position: absolute;
+    top: 5px;
+     right: 5px;
+}
+
+.code-block > .code-menu {
+  visibility: hidden;
+}
+.code-block:hover > .code-menu {
+  visibility: visible;
+}
     .success {
       color: #1e8e3e;
     }
@@ -19,9 +34,17 @@
     }
   </style>
   <script>
+
+        var h = x => '#' + x.match(/\d+/g).map(y = z => ((+z < 16)?'0':'') + (+z).toString(16)).join('');
+
         function theme(el){
 
             var ctheme = el.value;
+
+            // default: Dark
+
+            var preStyle = getComputedStyle(el.parentNode.parentNode);
+            ctheme = h( preStyle.backgroundColor) == "#28323f"? "Light" : "Dark";
 
             for( i in  document.styleSheets){
                 if( document.styleSheets[i].href && document.styleSheets[i].href.endsWith("/codelab-elements/codelab-elements.css") ) {
@@ -49,20 +72,20 @@
 
 
                     }
-              }
+                }
             }
-
-            el.value = ctheme =="Dark"? "Light" : "Dark";
         }
 
         function wrap(el){
             var style = el.parentNode.parentNode.getElementsByTagName("code")[0].style;
             if( style.whiteSpace == "pre-wrap"){
                 style.removeProperty( "white-space" );
-                el.value = "Wrap";
+                // wrap
+                el.value = "\u21E5";
             }else{
                style.whiteSpace = "pre-wrap";
-                el.value = "Unwrap";
+               // unwrap
+                el.value = "\u2194";
             }
 
         }
@@ -123,7 +146,10 @@
       <google-codelab-step label="Part 1. Edge 19.01 AIO Install" duration="20">
         <p>1. Open <a href="https://console.cloud.google.com/" target="_blank">https://console.cloud.google.com</a>. Click on Activate Cloud Shell button.</p>
 <p>2. Define useful environment variables at your workstation terminal window</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>export ZONE_ID=europe-west1-b
+
+
+
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>export ZONE_ID=europe-west1-b
 export PROJECT_ID=&lt;your-project-id&gt;
 export APIGEE_SERVICE_ACCOUNT=apigee-sa
 export JUMPBOX=jumpbox
@@ -134,25 +160,27 @@ gcloud config set compute/zone $ZONE_ID</code></pre>
 <aside class="special"><p><strong>NOTE:</strong> to delete instance</p>
 <p>gcloud compute instances delete jumpbox</p>
 </aside>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>gcloud iam service-accounts create $APIGEE_SERVICE_ACCOUNT --display-name &#34;Apigee Edge Service Account&#34;
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>gcloud iam service-accounts create $APIGEE_SERVICE_ACCOUNT --display-name &#34;Apigee Edge Service Account&#34;
 
 gcloud projects add-iam-policy-binding $PROJECT_ID --member=&#34;serviceAccount:$APIGEE_SERVICE_ACCOUNT@$PROJECT_ID.iam.gserviceaccount.com&#34; --role=&#39;roles/iam.serviceAccountUser&#39;
 
 gcloud projects add-iam-policy-binding $PROJECT_ID --member serviceAccount:$APIGEE_SERVICE_ACCOUNT@$PROJECT_ID.iam.gserviceaccount.com --role roles/compute.admin</code></pre>
 <p>4. Create jumpbox node we are going to use as Bastion Host</p>
 <p><a href="https://cloud.google.com/solutions/connecting-securely#bastion" target="_blank">https://cloud.google.com/solutions/connecting-securely#bastion</a></p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>gcloud compute instances create $JUMPBOX --image-family=centos-7 --image-project=centos-cloud --scopes=cloud-platform --service-account=$APIGEE_SERVICE_ACCOUNT@$PROJECT_ID.iam.gserviceaccount.com </code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>gcloud compute instances create $JUMPBOX --image-family=centos-7 --image-project=centos-cloud --scopes=cloud-platform --service-account=$APIGEE_SERVICE_ACCOUNT@$PROJECT_ID.iam.gserviceaccount.com </code></pre>
 <p>5. If not yet, open Compute Engine/VM Instances menu in console and click on SSH Combo-box button to open ssh session to the jumpbox and define environment</p>
 <p class="image-container"><img style="width: 624.00px" src="img/2e93f40eab37f40a.png"></p>
 <aside class="special"><p><strong>NOTE:</strong> you can use gcloud compute ssh command in your terminal window as well:</p>
 <p><code>gcloud compute ssh $JUMPBOX</code></p>
 </aside>
 <p>6. Define environment variable in jumpbox session</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>export PROJECT_ID=&lt;your-project-id&gt;
+
+
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>export PROJECT_ID=&lt;your-project-id&gt;
 export ZONE_ID=europe-west1-b
 gcloud config set compute/zone $ZONE_ID</code></pre>
 <p>7. Create nodes for all-in-one Apigee Edge OPDK instance, <code>exco-aio</code> and another node for New Edge Experience components, <code>exco-nee</code>.</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>gcloud compute instances create --image-family=centos-7 --image-project=centos-cloud --machine-type=n1-standard-4 --boot-disk-size=25GB exco-aio
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>gcloud compute instances create --image-family=centos-7 --image-project=centos-cloud --machine-type=n1-standard-4 --boot-disk-size=25GB exco-aio
 
 gcloud compute instances create --image-family=centos-7 --image-project=centos-cloud --machine-type=n1-standard-4 --boot-disk-size=25GB exco-nee</code></pre>
 <p>8. In the console, click on REFRESH button to Validate list of VM instances. </p>
@@ -160,7 +188,7 @@ gcloud compute instances create --image-family=centos-7 --image-project=centos-c
 <p>9. Setup ssh passwordless key for an admin user called  <code>edge</code>, which is an identity we are going to use to manage nodes.</p>
 <aside class="warning"><p>Correct expiry date timestamp appropriately below.</p>
 </aside>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>sudo yum install -y jq
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>sudo yum install -y jq
 
 ssh-keygen -t rsa -f ~/.ssh/edge -C edge -q -N &#34;&#34;
 
@@ -172,40 +200,40 @@ gcloud compute project-info add-metadata  --no-user-output-enabled --metadata-fr
 <p>11. In the Console, open Compute Engine/Metadata. Select SSH Keys tab and locate the key you just created.</p>
 <p class="image-container"><img style="width: 624.00px" src="img/d4f8103c4932bdc8.png"></p>
 <p>11. Add following line the <code>~/.ssh/config</code> file for the ssh passwordless configuration.</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>Host exco-aio
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>Host exco-aio
     User edge
     IdentityFile ~/.ssh/edge
 Host exco-nee
     User edge
     IdentityFile ~/.ssh/edge</code></pre>
 <p>11. Set up <code>rw</code> for user only permissions on <code>~/.ssh/config</code></p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>sudo chmod 600 ~/.ssh/config</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>sudo chmod 600 ~/.ssh/config</code></pre>
 <h2 is-upgraded>Set up Edge Classic at exco-aio</h2>
 <p>1. Ssh into exco-aio node. Accept exco-aio node fingerprint.</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>ssh exco-aio </code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>ssh exco-aio </code></pre>
 <p>2. verify that hostname returns single IPv4 address</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>$ hostname -i 
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>$ hostname -i 
 
 10.132.0.3</code></pre>
 <p>3. Install utilities and setup apigee-install folder for user edge</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>sudo yum install -y mc nc wget
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>sudo yum install -y mc nc wget
 
 sudo mkdir /opt/apigee-install
 sudo chown edge: /opt/apigee-install</code></pre>
 <aside class="warning"><p><strong>IMPORTANT: </strong>At this point you <strong>shall have </strong>an access to the apigee rpm repositories and edge license file. </p>
 </aside>
 <p>4. Copy license file and rpm repo credentials file to the <code>/opt/apigee-install</code> folder.  This is a sample contents:</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>cat /opt/apigee-install/credentials.txt
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>cat /opt/apigee-install/credentials.txt
 
 User: &lt;repo-user&gt;
 Password: &lt;repo-password&gt;</code></pre>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>cat /opt/apigee-install/license.txt
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>cat /opt/apigee-install/license.txt
 
 WI...
 ...
 ...Q==</code></pre>
 <p>5. Define silent config file <code>edge-aio.cfg</code></p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>cat &lt;&lt;EOT &gt; /opt/apigee-install/edge-aio.cfg 
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>cat &lt;&lt;EOT &gt; /opt/apigee-install/edge-aio.cfg 
 IP1=$(hostname -i)
 
 HOSTIP=&#34;\$IP1&#34; 
@@ -228,7 +256,7 @@ SMTPMAILFROM=&#34;admin@exco.com&#34;
 EOT
 </code></pre>
 <p>6. Define <code>org/env/vhost provision</code> file</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>cat &lt;&lt;EOT &gt; /opt/apigee-install/edge-provision-org-env.cfg
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>cat &lt;&lt;EOT &gt; /opt/apigee-install/edge-provision-org-env.cfg
 IP1=$(hostname -i)
 
 MSIP=\$IP1
@@ -248,13 +276,13 @@ VHOST_ALIAS=\${ORG_NAME}_\${ENV_NAME}.apigee.net
 USE_ALL_MPS=y
 EOT</code></pre>
 <p>8. Install openjdk version 8. </p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>sudo yum -y install java-1.8.0-openjdk
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>sudo yum -y install java-1.8.0-openjdk
 
 java -version</code></pre>
 <p>8. Temporarily reset SELinux into permissive mode</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>sudo setenforce 0</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>sudo setenforce 0</code></pre>
 <p>9. Bootstrap Edge and install apigee-setup</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>wget https://software.apigee.com/bootstrap_4.19.01.sh -O /opt/apigee-install/bootstrap_4.19.01.sh
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>wget https://software.apigee.com/bootstrap_4.19.01.sh -O /opt/apigee-install/bootstrap_4.19.01.sh
 
 export REPO_CLIENT_ID=`awk &#39;/User:/{print $2}&#39; /opt/apigee-install/credentials.txt`
 export REPO_PASSWORD=`awk &#39;/Password:/{print $2}&#39; /opt/apigee-install/credentials.txt`
@@ -264,15 +292,15 @@ sudo bash /opt/apigee-install/bootstrap_4.19.01.sh apigeeuser=$REPO_CLIENT_ID ap
 
 sudo /opt/apigee/apigee-service/bin/apigee-service apigee-setup install</code></pre>
 <p>10. Install Edge aio using edge-aio.cfg silent config file</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>sudo /opt/apigee/apigee-setup/bin/setup.sh -f /opt/apigee-install/edge-aio.cfg -p aio | tee /opt/apigee-install/edge-apigee-install-aio-`date -u +\&#34;%Y-%m-%dT%H:%M:%SZ\&#34;`.log</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>sudo /opt/apigee/apigee-setup/bin/setup.sh -f /opt/apigee-install/edge-aio.cfg -p aio | tee /opt/apigee-install/edge-apigee-install-aio-`date -u +\&#34;%Y-%m-%dT%H:%M:%SZ\&#34;`.log</code></pre>
 <p>10. Validate Edge AIO installation</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>/opt/apigee/apigee-service/bin/apigee-service apigee-validate install | tee /opt/apigee-install/edge-apigee-validate-install-`date -u +\&#34;%Y-%m-%dT%H:%M:%SZ\&#34;`.log
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>/opt/apigee/apigee-service/bin/apigee-service apigee-validate install | tee /opt/apigee-install/edge-apigee-validate-install-`date -u +\&#34;%Y-%m-%dT%H:%M:%SZ\&#34;`.log
 
 /opt/apigee/apigee-service/bin/apigee-service apigee-validate install | tee /opt/apigee-install/edge-apigee-validate-setup-`date -u +\&#34;%Y-%m-%dT%H:%M:%SZ\&#34;`.log
 
 /opt/apigee/apigee-service/bin/apigee-service apigee-validate setup -f /opt/apigee-install/edge-aio.cfg | tee /opt/apigee-install/edge-apigee-validate-install-`date -u +\&#34;%Y-%m-%dT%H:%M:%SZ\&#34;`.log</code></pre>
 <p>11. Provision org and env</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>/opt/apigee/apigee-service/bin/apigee-service apigee-provision setup-org -f /opt/apigee-install/edge-provision-org-env.cfg | tee /opt/apigee-install/edge-apigee-setup-org-install-`date -u +\&#34;%Y-%m-%dT%H:%M:%SZ\&#34;`.log</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>/opt/apigee/apigee-service/bin/apigee-service apigee-provision setup-org -f /opt/apigee-install/edge-provision-org-env.cfg | tee /opt/apigee-install/edge-apigee-setup-org-install-`date -u +\&#34;%Y-%m-%dT%H:%M:%SZ\&#34;`.log</code></pre>
 
 
       </google-codelab-step>
@@ -286,7 +314,7 @@ sudo /opt/apigee/apigee-service/bin/apigee-service apigee-setup install</code></
 <p>DSRM Password: Apigee123!</p>
 <h2 is-upgraded>Provisioning Windows Server</h2>
 <p>1.  Provision Windows Server 2016 instance exco-adfs</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>gcloud beta compute --project=$PROJECT_ID instances create exco-adfs --zone=$ZONE_ID --machine-type=n1-standard-2 --image=windows-server-2016-dc-v20181211 --image-project=windows-cloud --boot-disk-size=50GB --boot-disk-type=pd-standard --boot-disk-device-name=exco-adfs</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>gcloud beta compute --project=$PROJECT_ID instances create exco-adfs --zone=$ZONE_ID --machine-type=n1-standard-2 --image=windows-server-2016-dc-v20181211 --image-project=windows-cloud --boot-disk-size=50GB --boot-disk-type=pd-standard --boot-disk-device-name=exco-adfs</code></pre>
 <p>2. Reset and make a note of your Windows password. You need it to login into Windows box, but also to supply ADFS credentials.</p>
 <p><code>gcloud compute reset-windows-password exco-adfs</code></p>
 <p>3. Configure MS RDP client desktop entry for user apigee_sa </p>
@@ -324,7 +352,7 @@ sudo /opt/apigee/apigee-service/bin/apigee-service apigee-setup install</code></
 <p>6. Paths. Accept defaults. Next</p>
 <p class="image-container"><img style="width: 447.50px" src="img/633978f23c0e278c.png"></p>
 <p>7. Summary of All Installation Options/Selections. View Script</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>#
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>#
 # Windows PowerShell script for AD DS Deployment
 #
 
@@ -347,7 +375,7 @@ Install-ADDSForest `
 <p>9. In the Start menu under Windows System group, right-click on Command Prompt; Select More; Run as an Administrator menu item.</p>
 <p class="image-container"><img style="width: 450.50px" src="img/dfb34251a2cf55d0.png"></p>
 <p>10. Run following command to change local administrator password</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>net user administrator *</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>net user administrator *</code></pre>
 <p>Type and retype a password: <code>Apigee123!</code></p>
 <p>11. After the password is changed successfully, press Previous and Next button of the Prerequisites Check of the ADDS Configuration Wizard to trigger the prerequisites check. This time it will finish successfully only with some warnings but without errors.</p>
 <p>12. Press Install.</p>
@@ -383,23 +411,23 @@ Install-ADDSForest `
 <p>1. Start Windows PowerShell as Administrator</p>
 <p class="image-container"><img style="width: 433.23px" src="img/f87a167799205d49.png"></p>
 <p>2. To see the list of available cmdlets for certificate manipulations, execute</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>Get-Command -Module PKI</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>Get-Command -Module PKI</code></pre>
 <p>3. The New-SelfSignedCertificate can only install certificates to the My certificate store, and that requires local administrator rights on the device. Execute following fragment to create an adfs certificate:</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>$todaydt = Get-Date
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>$todaydt = Get-Date
 $years = $todaydt.AddYears(10)
 New-SelfSignedCertificate -dnsname adfs.exco.com -notafter $years -CertStoreLocation cert:\LocalMachine\My</code></pre>
 <p>Output: </p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>PSParentPath: Microsoft.PowerShell.Security\Certificate::LocalMachine\My
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>PSParentPath: Microsoft.PowerShell.Security\Certificate::LocalMachine\My
 
 Thumbprint                                Subject
 ----------                                -------
 A3B12D1E00AABA4EDC8A2CA27BCAA22A8F7920E0  CN=adfs.exco.com</code></pre>
 <p>4. Set up a certificate password variable</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>$CertPassword = ConvertTo-SecureString -String &#34;Apigee123!&#34; -Force –AsPlainText</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>$CertPassword = ConvertTo-SecureString -String &#34;Apigee123!&#34; -Force –AsPlainText</code></pre>
 <p>5. Prepare C:\adfs-certificates directory.</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>mkdir C:\adfs-certificates</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>mkdir C:\adfs-certificates</code></pre>
 <p>6. Export the certificate to an C:\adfs-certificates directory, using certificate thumbprint from the previous step.</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>Export-PfxCertificate -Cert cert:\LocalMachine\My\A3B12D1E00AABA4EDC8A2CA27BCAA22A8F7920E0 -FilePath C:\adfs-certificates\adfs-cert.pfx -Password $CertPassword</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>Export-PfxCertificate -Cert cert:\LocalMachine\My\A3B12D1E00AABA4EDC8A2CA27BCAA22A8F7920E0 -FilePath C:\adfs-certificates\adfs-cert.pfx -Password $CertPassword</code></pre>
 
 
       </google-codelab-step>
@@ -430,7 +458,7 @@ A3B12D1E00AABA4EDC8A2CA27BCAA22A8F7920E0  CN=adfs.exco.com</code></pre>
 <p>8. Press Finish on the settings summary wizard page.</p>
 <p class="image-container"><img style="width: 266.98px" src="img/9bc345ad87931028.png"></p>
 <p>9. Use ipconfig command in the command window to obtain IP Address of this server. </p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>C:\Windows\system32&gt; ipconfig
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>C:\Windows\system32&gt; ipconfig
 
 Windows IP Configuration
 
@@ -451,10 +479,10 @@ Ethernet adapter Ethernet:
 <p>12. Click on Add Host button.</p>
 <h2 is-upgraded>Create KdsRootKey using PowerShell</h2>
 <p>1. In the PowerShell session, execute Add-KdsRootKey command (use Get-Help Add-KdsRootKey for details):</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>Import-Module ActiveDirectory
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>Import-Module ActiveDirectory
 Add-KdsRootKey -EffectiveImmediately</code></pre>
 <p>Output:</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>Guid
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>Guid
 ----
 4be76f4a-6306-dff3-b2cf-dce852dc4df3</code></pre>
 <aside class="special"><p>TIP: If you get following error message:</p>
@@ -508,7 +536,7 @@ Federation service will be configured to run as EXCO\adfs_sa$.</pre>
     
       <google-codelab-step label="AD FS Test SignOn" duration="10">
         <p>1. Check status of the sign on page and enable it</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>PS C:\Windows\system32&gt; Get-AdfsProperties | Select-Object EnableIdpInitiatedSignonpage
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>PS C:\Windows\system32&gt; Get-AdfsProperties | Select-Object EnableIdpInitiatedSignonpage
 
 EnableIdpInitiatedSignonPage
 ----------------------------
@@ -540,7 +568,7 @@ EnableIdpInitiatedSignonPage
 <p class="image-container"><img style="width: 208.50px" src="img/4938ab3b72fe9288.png"></p>
 <p>Next.</p>
 <p>5. Check the summary and press Finish</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>Full name: Edge Admin
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>Full name: Edge Admin
 User logon name: edgeadmin@Exco.local
 The user must change the password at next logon.</code></pre>
 <p>6. Double-click on a newly-created user account to open Properties editor and populate E-mail field with corresponding value of the edge System Administrator, admin@exco.com, that you used in silent config file.</p>
@@ -550,7 +578,7 @@ The user must change the password at next logon.</code></pre>
 <p>1. Open Tools/Active Directory Users and Computers</p>
 <p>2. At the Exco.local/Users folder, right-click New/User</p>
 <p>3. Fill the form for John Doe.</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>First name: John
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>First name: John
 Last name: Doe
 User logon name: johnd</code></pre>
 <p class="image-container"><img style="width: 268.01px" src="img/9d936cb9f6138111.png"></p>
@@ -561,7 +589,7 @@ User logon name: johnd</code></pre>
 <p class="image-container"><img style="width: 208.50px" src="img/4938ab3b72fe9288.png"></p>
 <p>Next.</p>
 <p>5. Check the summary and press Finish</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>Full name: John Doe
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>Full name: John Doe
 User logon name: johnd@Exco.local
 The password never expires.</code></pre>
 <p>6. Double-click on a newly-created user account to open Properties editor and populate E-mail field with corresponding value of John Doe user&#39;s email, johnd@exco.com, you&#39;re going to create later.</p>
@@ -584,7 +612,7 @@ The password never expires.</code></pre>
         <p><strong>For Details: </strong><a href="https://docs.apigee.com/private-cloud/v4.18.05/install-and-configure-edge-sso" target="_blank">https://docs.apigee.com/private-cloud/v4.19.01/install-and-configure-edge-sso</a></p>
 <h2 is-upgraded>Create the TLS keys and certificates</h2>
 <p>1. At the edge-aio node, create directory for PKI artifacts</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>sudo mkdir -p /opt/apigee/customer/application/apigee-sso/jwt-keys
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>sudo mkdir -p /opt/apigee/customer/application/apigee-sso/jwt-keys
 sudo chown apigee: /opt/apigee/customer/application/apigee-sso/jwt-keys
 cd /opt/apigee/customer/application/apigee-sso/jwt-keys/
 
@@ -602,7 +630,7 @@ cd /opt/apigee/customer/application/apigee-sso/saml/
 sudo openssl genrsa -aes256 -out edge-sso-server-key.pem 1024
 # password: Apigee123!</code></pre>
 <p>2. Strip passphrase from the private key file</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>sudo openssl rsa -in edge-sso-server-key.pem -out edge-sso-server-key-np.pem </code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>sudo openssl rsa -in edge-sso-server-key.pem -out edge-sso-server-key-np.pem </code></pre>
 <p>3. Create certificate request configuration file</p>
 <p><strong>NOTES:</strong></p>
 <p>One-liner: <a href="https://security.stackexchange.com/questions/74345/provide-subjectaltname-to-openssl-directly-on-command-line" target="_blank">https://security.stackexchange.com/questions/74345/provide-subjectaltname-to-openssl-directly-on-command-line</a></p>
@@ -610,7 +638,7 @@ sudo openssl genrsa -aes256 -out edge-sso-server-key.pem 1024
 <p>Extensions in certificates are not transferred to certificate requests and vice versa.</p>
 <p>simple ca: <a href="https://serverfault.com/questions/845806/how-to-issue-ssl-certificate-with-san-extension" target="_blank">https://serverfault.com/questions/845806/how-to-issue-ssl-certificate-with-san-extension</a></p>
 <p><strong><code>vi edge-sso-server-csr.conf</code></strong></p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>[req]
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>[req]
 default_bits = 2048
 default_keyfile = edge-sso-server-key.pem
 distinguished_name = req_distinguished_name
@@ -632,13 +660,13 @@ subjectAltName = @alt_names
 [alt_names]
 DNS.1 = edge-sso.exco.com</code></pre>
 <p>4. Create certificate request</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>openssl req -new -out edge-sso-server-csr.pem -nodes -key edge-sso-server-key.pem -config edge-sso-server-csr.conf</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>openssl req -new -out edge-sso-server-csr.pem -nodes -key edge-sso-server-key.pem -config edge-sso-server-csr.conf</code></pre>
 <p>5. Verify CSR</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>openssl req -text -noout -verify -in edge-sso-server-csr.pem</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>openssl req -text -noout -verify -in edge-sso-server-csr.pem</code></pre>
 <p>6. Generate and sign certificate</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>openssl req -x509 -nodes -days 3650 -key edge-sso-server-key.pem -out edge-sso-server-cer.pem -config edge-sso-server-csr.conf -extensions &#39;v3_req&#39;</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>openssl req -x509 -nodes -days 3650 -key edge-sso-server-key.pem -out edge-sso-server-cer.pem -config edge-sso-server-csr.conf -extensions &#39;v3_req&#39;</code></pre>
 <p>7. Verify certificate</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>openssl x509 -text -noout -in edge-sso-server-cer.pem</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>openssl x509 -text -noout -in edge-sso-server-cer.pem</code></pre>
 <h2 is-upgraded>SSO Configuration</h2>
 <p><strong>exco-adfs</strong> private network IP: <code>10.132.0.12</code></p>
 <p><strong>exco-aio</strong> private network IP: <code>10.132.0.10</code></p>
@@ -646,14 +674,14 @@ DNS.1 = edge-sso.exco.com</code></pre>
 <p><a href="https://adfs.exco.com/FederationMetadata/2007-06/FederationMetadata.xml" target="_blank">https://adfs.exco.com/FederationMetadata/2007-06/FederationMetadata.xml</a></p>
 <p>FQDN: <code>edge-sso.exco.com</code></p>
 <p>1. At the exco-adfs Windows node, &#39;fix&#39; FQDN record in &#34;C:\Windows\System32\drivers\etc\hosts&#34; edit as Administrator</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>cd C:\Windows\System32\drivers\etc\hosts
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>cd C:\Windows\System32\drivers\etc\hosts
 10.132.0.10 edge-sso.exco.com</code></pre>
 <p>2. At the exco-aio node, configure /etc/hosts for AD FS Internal IP</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>10.132.0.12 adfs.exco.com</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>10.132.0.12 adfs.exco.com</code></pre>
 <p>3. Verify/fetch federation metadata </p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>curl https://adfs.exco.com/FederationMetadata/2007-06/FederationMetadata.xml -k</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>curl https://adfs.exco.com/FederationMetadata/2007-06/FederationMetadata.xml -k</code></pre>
 <p>4. Configure sso tomcat truststore. Identify truststore file.</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>$ ls -ls /usr/java/latest
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>$ ls -ls /usr/java/latest
 0 lrwxrwxrwx. 1 root root 28 Dec 19 18:16 /usr/java/latest -&gt; /usr/java/jdk1.8.0_191-amd64
 
 $ ls -ls /usr/java/latest/jre/lib/security
@@ -667,7 +695,7 @@ $ ls -ls /usr/java/latest/jre/lib/security
 <p class="image-container"><img style="width: 242.66px" src="img/7e8e23f9dbe818db.png"></p>
 <p>Click Finish. Confirm successful certificate export dialog.</p>
 <p>7. copy to clipboard</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>type C:\adfs-certificates\adfs-cer.cer | clip
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>type C:\adfs-certificates\adfs-cer.cer | clip
 
 -----BEGIN CERTIFICATE-----
 MIIDJDCCAgygAwIBAgIQbjAM4kBGMIpLJKSqd9bYUTANBgkqhkiG9w0BAQsFADAY
@@ -689,7 +717,7 @@ f/pllF+75fe6C5jCkt4uQqIIcUHraK8KxTaP3kbb0XHCdM9cxN/RRvnxhT6/vgtL
 2QXWZz3H/zKUZI4XyHSkBTK1w1BDCX1W0QvgMT4PJyEYWUtRmXYm6A==
 -----END CERTIFICATE-----</code></pre>
 <p>8. At the exco-aio node, import adfs public certificate</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>vi /opt/apigee-install/adfs-cer.pem
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>vi /opt/apigee-install/adfs-cer.pem
 
 # insert the certificate from your clipboard
 
@@ -705,7 +733,7 @@ Certificate was added to keystore</code></pre>
 <p>- Update idp metadata url;</p>
 <p>- SSO SAML service provider key and certificate</p>
 <p><strong><code>vi /opt/apigee-install/edge-sso.cfg</code></strong></p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>IP1=10.132.0.10
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>IP1=10.132.0.10
 IP2=$IP1
 
 ## Management Server configuration.
@@ -781,9 +809,9 @@ SMTPMAILFROM=&#34;Exco &lt;admin@exco.com&gt;&#34;
 
 </code></pre>
 <p>10. Install and configure apigee-sso component</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>/opt/apigee/apigee-setup/bin/setup.sh -p sso -f /opt/apigee-install/edge-sso.cfg | tee /opt/apigee-install/edge-apigee-install-sso-`date -u +\&#34;%Y-%m-%dT%H:%M:%SZ\&#34;`.log</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>/opt/apigee/apigee-setup/bin/setup.sh -p sso -f /opt/apigee-install/edge-sso.cfg | tee /opt/apigee-install/edge-apigee-install-sso-`date -u +\&#34;%Y-%m-%dT%H:%M:%SZ\&#34;`.log</code></pre>
 <p>11. Install apigee-ssoadminapi</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>/opt/apigee/apigee-service/bin/apigee-service apigee-ssoadminapi install | tee /opt/apigee-install/edge-apigee-install-ssoadminapi-`date -u +\&#34;%Y-%m-%dT%H:%M:%SZ\&#34;`.log
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>/opt/apigee/apigee-service/bin/apigee-service apigee-ssoadminapi install | tee /opt/apigee-install/edge-apigee-install-ssoadminapi-`date -u +\&#34;%Y-%m-%dT%H:%M:%SZ\&#34;`.log
 
 
 # [not for googler project!] firewall for sso
@@ -826,7 +854,7 @@ sudo cp /opt/apigee/customer/application/apigee-sso/saml/apigee-sso-keystore.jks
 sudo chown apigee: /opt/apigee/customer/application/apigee-sso/tomcat-ssl/apigee-sso-keystore.jks</pre>
 <p>3. Create apigee-sso ssl termination silent config file. Override default settings.</p>
 <p><strong><code>vi /opt/apigee-install/edge-sso-ssl-termination.cfg</code></strong></p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>. /opt/apigee-install/edge-sso.cfg
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>. /opt/apigee-install/edge-sso.cfg
 
 # Enable SSL_TERMINATION mode.
 SSO_TOMCAT_PROFILE=SSL_TERMINATION
@@ -853,7 +881,7 @@ SSO_PUBLIC_URL_HOSTNAME=edge-sso.exco.com
 <p>4. Configure the Edge SSO module</p>
 <pre>/opt/apigee/apigee-service/bin/apigee-service apigee-sso setup -f /opt/apigee-install/edge-sso-ssl-termination.cfg | tee /opt/apigee-install/edge-apigee-sso-setup-ssl-`date -u +\&#34;%Y-%m-%dT%H:%M:%SZ\&#34;`.log</pre>
 <p><strong>NOTE: </strong>if required, use following command to restart apigee-sso server</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>apigee-service apigee-sso restart</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>apigee-service apigee-sso restart</code></pre>
 <h2 is-upgraded>Deploy and Test edge-sso.exco.com public sertificate</h2>
 <p>1. At the exco-aio node, copy public certificate to exco-adfs Windows node into the</p>
 <p><strong>C:\adfs-certificates\edge-sso-server-cer.pem </strong></p>
@@ -951,7 +979,7 @@ N2uH6qqsZSS4ZdnAYYZQDLF8hA==
 </pre>
 <p>2. Create Edge UI silent configuration file.</p>
 <p><strong><code>vi /opt/apigee-install/edge-ui-sso.cfg</code></strong></p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>IP1=$(hostname)
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>IP1=$(hostname)
 
 # Comma separated list of URLs for the Edge UI,
 # in the format:  http_or_https://IP_or_hostname_of_UI:9000.
@@ -1000,7 +1028,7 @@ EDGEUI_SSO_CLIENT_OVERWRITE=y
 <p><a href="https://b.corp.google.com/issues/68853668" target="_blank">https://b.corp.google.com/issues/68853668</a></p>
 <p>1. Edge UI</p>
 <p><code>sudo vi /opt/apigee/edge-ui/conf/source/application.conf </code></p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>play.ws.ssl {
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>play.ws.ssl {
   trustManager = {
     stores = [
       { type = &#34;PEM&#34;, path = &#34;/opt/apigee/customer/application/apigee-sso/saml/edge-sso-server-cer.pem&#34; }
@@ -1023,9 +1051,9 @@ java.lang.IllegalArgumentException: invalid version format: ﾐ]Z^Uﾠ￩^G ;^D�
 <h2 is-upgraded>Edge SSO: Add and Test a User</h2>
 <p>1. Create .netrc entry for Management API</p>
 <p><strong><code>vi ~/.netrc</code></strong></p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>machine 10.132.0.10 login admin@exco.com password Apigee123!</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>machine 10.132.0.10 login admin@exco.com password Apigee123!</code></pre>
 <p>2. Create johnd@exco.local edge user in the org org.</p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>curl -n -H &#34;Content-Type: application/json&#34; -X POST http://10.132.0.10:8080/v1/users -d &#39;{&#34;emailId&#34;: &#34;johnd@exco.com&#34;, &#34;firstName&#34;: &#34;John&#34;, &#34;lastName&#34;: &#34;Doe&#34;, &#34;password&#34;: &#34;Apigee123!&#34;}&#39;</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>curl -n -H &#34;Content-Type: application/json&#34; -X POST http://10.132.0.10:8080/v1/users -d &#39;{&#34;emailId&#34;: &#34;johnd@exco.com&#34;, &#34;firstName&#34;: &#34;John&#34;, &#34;lastName&#34;: &#34;Doe&#34;, &#34;password&#34;: &#34;Apigee123!&#34;}&#39;</code></pre>
 <p>3. Add new user to org organization</p>
 <pre>curl -n -H &#34;Content-Type:application/x-www-form-urlencoded&#34; -X POST http://10.132.0.10:8080/v1/o/org/userroles/user/users?id=johnd@exco.com</pre>
 <p>4. Navigate to </p>
@@ -1104,7 +1132,7 @@ sudo /opt/apigee/apigee-service/bin/apigee-service apigee-setup install
 </pre>
 <p>6. &#39;Fix&#39; networking connectivity between nodes via FQDN</p>
 <p><strong><code>sudo vi /etc/hosts</code></strong></p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>10.132.0.10 edge-sso.exco.com</code></pre>
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>10.132.0.10 edge-sso.exco.com</code></pre>
 <p>7. Copy and install public <code>edge-sso-server-cer.pem</code> certificate</p>
 <pre>sudo mkdir -p /opt/apigee/customer/application/apigee-sso/saml/
 cd /opt/apigee/customer/application
@@ -1128,7 +1156,7 @@ export JAVA_HOME=/usr/java/latest
 sudo keytool -importcert -alias startssl -keystore $JAVA_HOME/jre/lib/security/cacerts -file /opt/apigee/customer/application/apigee-sso/saml/edge-sso-server-cer.pem  -storepass changeit</pre>
 <p>10. Define edge-ui-nee silent config file</p>
 <p><strong><code>vi /opt/apigee-install/edge-ui-nee.cfg</code></strong></p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code># IP of the Edge Management Server.
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code># IP of the Edge Management Server.
 # This node also hosts the Edge SSO module and the current, or classic, Edge UI.
 IP1=10.132.0.10
 
@@ -1255,11 +1283,11 @@ SMTPMAILFROM=&#34;My Company myco@company.com&#34;
 <p>Edit some Edge 19.01 files to configure GO runtime truststore certificate so that Management UI can successfully connect to apigee-sso.</p>
 <p>1. Add export env variable line to the export.sh script</p>
 <p><code>vi /opt/apigee/apigee-service-4.19.01-0.0.1354/lib/exports.sh</code></p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code>export SSL_CERT_FILE
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code>export SSL_CERT_FILE
 </code></pre>
 <p>2. In the service-functions.sh script, add lines in the _dump_vars() and _infer_defaults() variables</p>
 <p><code>/opt/apigee/apigee-service-4.19.01-0.0.1354/lib/service-functions.sh</code></p>
-<pre><div style="direction: rtl;"><input type="button" onclick="copy(this);" value="Copy"><input type="button" onclick="theme(this);" value="Light"><input type="button" onclick="wrap(this);" value="Wrap"></div><code># 1
+<pre class="code-block"><div class="code-menu"><input type="button" onclick="wrap(this);" value="&#8677;"><input type="button" onclick="theme(this);" value="&#9681;"><input type="button" onclick="copy(this);" value="&#10697;"></div><code># 1
 _dump_vars()
 {
     notice &#34;SSL_CERT_FILE=/opt/apigee/customer/application/apigee-sso/saml/edge-sso-server-cer.pem&#34;
