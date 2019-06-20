@@ -92,10 +92,16 @@
 
 
         function copy(el){
+            var cel = el;
+            
             var text = el.parentNode.parentNode.children[1].textContent;
             navigator.clipboard.writeText( text )
                   .then(() => {
-                    console.log('Text copied to clipboard');
+                    //console.log('Text copied to clipboard');
+                    cel.value = "\u220E";
+                    setTimeout( () => {
+                            cel.value = "\u29c9";
+                        }, 1000 );
                   })
                   .catch(err => {
                     // This can happen if the user denies clipboard permissions:
